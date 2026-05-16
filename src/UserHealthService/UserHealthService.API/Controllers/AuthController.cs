@@ -465,13 +465,15 @@ public async Task<IActionResult> RegisterAssistant([FromBody] RegisterDto dto, C
                 Secure = false,
                 SameSite = SameSiteMode.Lax, 
                 Expires = DateTime.UtcNow.AddMinutes(15)
+              
             };
             var refreshCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = false, 
                 SameSite = SameSiteMode.Lax, 
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddDays(7),
+                Path = "/api/auth/refresh-token"
             };
             Console.WriteLine($"Setting access_token: {tokens.AccessToken.Substring(0, 20)}...");
             Console.WriteLine($"Setting refresh_token: {tokens.RefreshToken.Substring(0, 20)}...");
@@ -482,7 +484,10 @@ public async Task<IActionResult> RegisterAssistant([FromBody] RegisterDto dto, C
         private void ClearAuthCookies()
         {
             Response.Cookies.Delete("access_token");
-            Response.Cookies.Delete("refresh_token");
+            Response.Cookies.Delete("refresh_token", new CookieOptions
+            {
+                Path = "/api/auth/refresh-token"
+            });
         }
         #endregion
     }
